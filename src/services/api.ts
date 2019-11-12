@@ -1,22 +1,26 @@
-import { Expense } from '@/model/expense';
+import { Expense, InputExpense } from '@/model/expense';
 import { setTimeoutAsync } from '@/utils/async';
 import { StorageService } from './storageService';
 
-export interface OperationResult {
-    isOk: boolean;
-}
+
+export type InsertResult = { isOk: false } | { isOk: true, id: number };
 
 const storageService = new StorageService();
 
-export const actions = {
-    insertExpense: async (expense: Expense): Promise<OperationResult> => {
+export const apiActions = {
+    insertExpense: async (expense: InputExpense): Promise<InsertResult> => {
         await setTimeoutAsync(2000);
-        storageService.saveExpense(expense);
-        return { isOk: true };
+        const serializedExpense = { ...expense };
+        const id = storageService.saveExpense(serializedExpense);
+        return { isOk: true, id };
     },
     readExpenses: async (): Promise<Expense[]> => {
         await setTimeoutAsync(2000);
         const expenses = storageService.loadExpenses();
         return expenses;
-    }
+    },
+    removeExpense: async (expenseID: number): Promise<boolean> => {
+        await setTimeoutAsync(2000);
+        return storageService.removeExpense(expenseID);
+    },
 };

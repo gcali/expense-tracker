@@ -8,7 +8,7 @@
                 .col Amount
             .separator
             .content
-                .row(v-for="expense in expenseList")
+                .row(v-for="expense in expenseList" :key="expense.id")
                     .col {{expense.owner}}
                     .col {{expense.description}}
                     .col {{expense.amount}}
@@ -20,35 +20,29 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
+import { StoreVue } from '@/utils/base';
+
 import { Expense } from '../model/expense';
 import { StorageService } from '../services/storageService';
+import { State, actionRegistry } from '../vuex/store';
 
 @Component({
     components: {},
 })
-export default class ExpensePage extends Vue {
-
-    private expenseList?: Expense[] = [
-        {
-            amount: 12,
-            description: 'Test',
-            owner: 'Gio',
-            tags: [],
-        },
-    ];
-    private storageService: StorageService;
-
-    constructor() {
-        super();
-        this.storageService = new StorageService();
+export default class ExpensePage extends StoreVue {
+    public get expenseList(): Expense[] {
+        return this.$store.state.expenses.data;
     }
 
     public mounted() {
-        this.expenseList = this.storageService.loadExpenses();
+        this.$store.dispatch(actionRegistry.reloadExpenses);
     }
 
-    public removeExpense(expenseId: string) {
-        alert('Removing ' + expenseId);
+    public async removeExpense(expenseID: number) {
+        const result: boolean = await this.$store.dispatch(actionRegistry.removeExpense, expenseID);
+        if (!result) {
+            alert('Could not remove expense');
+        }
     }
 }
 </script>

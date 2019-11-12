@@ -32,8 +32,10 @@
 <script lang="ts">
 
 import { Vue, Component } from 'vue-property-decorator';
-import { Expense } from '../model/expense';
+import { Expense, InputExpense } from '../model/expense';
 import { StorageService } from '@/services/storageService';
+import { StoreVue } from '@/utils/base';
+import { actionRegistry } from '../vuex/store';
 
 interface ExpenseInputModel {
     amount?: number;
@@ -42,14 +44,8 @@ interface ExpenseInputModel {
     owner?: string;
 }
 
-export default class ExpenseInsertPage extends Vue {
+export default class ExpenseInsertPage extends StoreVue {
     private model: ExpenseInputModel = {};
-    private storageService: StorageService;
-
-    constructor() {
-        super();
-        this.storageService = new StorageService();
-    }
 
     public updateDescription = (value: string) => {
         this.model.description = value.trim();
@@ -69,13 +65,13 @@ export default class ExpenseInsertPage extends Vue {
 
     public submit = () => {
         if (this.validateModel(this.model)) {
-            const serializableModel: Expense = {
+            const serializableModel: InputExpense = {
                 amount: this.model.amount!,
                 description: this.model.description!,
                 owner: this.model.owner!,
                 tags: [],
             };
-            this.storageService.saveExpense(serializableModel);
+            this.$store.dispatch(actionRegistry.saveExpense, serializableModel);
         } else {
             alert('Invalid entry');
         }
