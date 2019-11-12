@@ -20,7 +20,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
-import { StoreVue } from '@/utils/base';
+import { StoreVue } from '@client/utils/base';
 
 import { Expense } from '../model/expense';
 import { StorageService } from '../services/storageService';

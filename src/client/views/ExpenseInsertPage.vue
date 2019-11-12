@@ -33,8 +33,8 @@
 
 import { Vue, Component } from 'vue-property-decorator';
 import { Expense, InputExpense } from '../model/expense';
-import { StorageService } from '@/services/storageService';
-import { StoreVue } from '@/utils/base';
+import { StorageService } from '@client/services/storageService';
+import { StoreVue } from '@client/utils/base';
 import { actionRegistry } from '../vuex/store';
 
 interface ExpenseInputModel {
@@ -52,7 +52,6 @@ export default class ExpenseInsertPage extends StoreVue {
     }
 
     public updateAmount = (value: string) => {
-        console.log(value);
         this.model.amount = parseFloat(value);
     }
 

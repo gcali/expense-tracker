@@ -1,5 +1,5 @@
-import { Expense, InputExpense } from '@/model/expense';
-import { setTimeoutAsync } from '@/utils/async';
+import { Expense, InputExpense } from '@client/model/expense';
+import { setTimeoutAsync } from '@client/utils/async';
 import { StorageService } from './storageService';
 
 

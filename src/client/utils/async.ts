@@ -4,4 +4,4 @@ export const setTimeoutAsync = (waitFor: number): Promise<void> => {
     });
 
     return promise;
-}
+};

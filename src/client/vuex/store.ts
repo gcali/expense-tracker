@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Vuex, { Commit, Store } from 'vuex';
-import { Expense, InputExpense } from '@/model/expense';
-import { apiActions } from '@/services/api';
-import { setTimeoutAsync } from '@/utils/async';
+import { Expense, InputExpense } from '@client/model/expense';
+import { apiActions } from '@client/services/api';
+import { setTimeoutAsync } from '@client/utils/async';
 
 interface IsLoading {
     [key: string]: boolean;
