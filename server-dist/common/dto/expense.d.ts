@@ -4,8 +4,6 @@ export interface InputExpense {
     tags: string[];
     owner: string;
 }
-
-
 export interface Expense extends InputExpense {
     id: number;
 }

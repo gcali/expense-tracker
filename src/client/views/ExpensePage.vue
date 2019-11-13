@@ -22,7 +22,7 @@ import { Vue, Component } from 'vue-property-decorator';
 
 import { StoreVue } from '@client/utils/base';
 
-import { Expense } from '../model/expense';
+import { Expense } from '@common/dto/expense';
 import { StorageService } from '../services/storageService';
 import { State, actionRegistry } from '../vuex/store';
 

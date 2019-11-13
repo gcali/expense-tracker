@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Vuex, { Commit, Store } from 'vuex';
-import { Expense, InputExpense } from '@client/model/expense';
 import { apiActions } from '@client/services/api';
 import { setTimeoutAsync } from '@client/utils/async';
+import { Expense, InputExpense } from '@common/dto/expense';
 
 interface IsLoading {
     [key: string]: boolean;
@@ -71,12 +71,13 @@ export const store = new Vuex.Store<State>({
             state.expenses.data = [...expenses],
     },
     actions: {
-        [actionRegistry.saveExpense]: ({ commit }, expense: InputExpense): Promise<void> => {
+        [actionRegistry.saveExpense]: ({ commit, dispatch }, expense: InputExpense): Promise<void> => {
             return withLoading(commit, async () => {
                 try {
                     const result = await apiActions.insertExpense(expense);
                     if (result.isOk) {
-                        commit(mutationRegistry.addExpense, { ...expense, id: result.id });
+                        await dispatch(actionRegistry.reloadExpenses);
+                        // commit(mutationRegistry.addExpense, { ...expense, id: result.id });
                     }
                 } catch (e) {
                     console.error(e);
@@ -96,11 +97,11 @@ export const store = new Vuex.Store<State>({
                 }
             });
         },
-        [actionRegistry.removeExpense]: ({ commit }, expenseID: number): Promise<boolean> => {
+        [actionRegistry.removeExpense]: ({ commit, dispatch }, expenseID: number): Promise<boolean> => {
             return withLoading(commit, async () => {
                 const result = await apiActions.removeExpense(expenseID);
                 if (result) {
-                    commit(mutationRegistry.removeExpense, expenseID);
+                    await dispatch(actionRegistry.reloadExpenses);
                 }
                 return result;
             });

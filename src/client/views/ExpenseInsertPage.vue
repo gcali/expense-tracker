@@ -32,7 +32,7 @@
 <script lang="ts">
 
 import { Vue, Component } from 'vue-property-decorator';
-import { Expense, InputExpense } from '../model/expense';
+import { InputExpense, Expense } from '@common/dto/expense';
 import { StorageService } from '@client/services/storageService';
 import { StoreVue } from '@client/utils/base';
 import { actionRegistry } from '../vuex/store';

@@ -1,4 +1,4 @@
-import { Expense, InputExpense } from '@client/model/expense';
+import { InputExpense, Expense } from '@common/dto/expense';
 
 export class StorageService {
 
