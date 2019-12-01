@@ -12,11 +12,15 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { actionRegistry } from './vuex/store';
 
 @Component({
     components: {},
 })
 export default class App extends Vue {
+    public mounted() {
+        this.$store.dispatch(actionRegistry.loadOwners);
+    }
     public get showLoader(): boolean {
         return this.$store.state.loading;
     }

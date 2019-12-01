@@ -13,6 +13,9 @@ export interface State {
         data: Expense[],
         lastUpdate: Date | null,
     };
+    masterData: {
+        owners: string[],
+    };
     loading: number;
     isLoading: IsLoading;
 }
@@ -33,12 +36,14 @@ export const mutationRegistry = {
     setExpenseLoading: 'set-expense-loading',
     removeExpense: 'remove-expense',
     setExpenses: 'set-expenses',
+    setOwners: 'set-owners',
 };
 
 export const actionRegistry = {
     saveExpense: 'save-expense',
     reloadExpenses: 'reload-expenses',
     removeExpense: 'remove-expense',
+    loadOwners: 'load-owners',
 };
 
 Vue.use(Vuex);
@@ -50,6 +55,9 @@ export const store = new Vuex.Store<State>({
         expenses: {
             data: [],
             lastUpdate: null,
+        },
+        masterData: {
+            owners: [],
         },
         loading: 0,
         isLoading: {
@@ -69,6 +77,7 @@ export const store = new Vuex.Store<State>({
             state.expenses.data = state.expenses.data.filter((e) => e.id !== id),
         [mutationRegistry.setExpenses]: (state, expenses: Expense[]) =>
             state.expenses.data = [...expenses],
+        [mutationRegistry.setOwners]: (state, owners: string[]) => state.masterData.owners = [...owners],
     },
     actions: {
         [actionRegistry.saveExpense]: ({ commit, dispatch }, expense: InputExpense): Promise<void> => {
@@ -104,6 +113,12 @@ export const store = new Vuex.Store<State>({
                     await dispatch(actionRegistry.reloadExpenses);
                 }
                 return result;
+            });
+        },
+        [actionRegistry.loadOwners]: ({ commit }): Promise<void> => {
+            return withLoading(commit, async () => {
+                const owners: string[] = await apiActions.getOwners();
+                commit(mutationRegistry.setOwners, owners);
             });
         },
     },
