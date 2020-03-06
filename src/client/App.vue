@@ -1,28 +1,39 @@
 <template lang="pug">
     #app
-        header Expense tracker
+        header 
+            .title Expense tracker
             .spinner-wrapper(v-if="showLoader")
                 .spinner
+            .user-name(v-if="isLoggedIn") {{userName}}
         img(alt="Vue logo" src="./assets/logo.png")
-        .links
+        .links(v-if="isLoggedIn")
             router-link(to="/") Expense List
             router-link(to="/insert") Insert Expense
-        router-view
+        router-view(v-if="isLoggedIn")
+        Login(v-if="!isLoggedIn")
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { actionRegistry } from './vuex/store';
+import Login from '@client/views/Login.vue';
 
 @Component({
-    components: {},
+    components: { Login },
 })
 export default class App extends Vue {
+    private get isLoggedIn() {
+        return this.$store.strongState().userName !== null;
+    }
+
+    private get userName() {
+        return this.$store.strongState().userName;
+    }
     public mounted() {
         this.$store.dispatch(actionRegistry.loadOwners);
     }
     public get showLoader(): boolean {
-        return this.$store.state.loading;
+        return this.$store.strongState().loading > 0;
     }
 }
 </script>
@@ -42,9 +53,22 @@ header {
     background-color: goldenrod;
     min-height: 2em;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     position: relative;
+    align-items: center;
+    .title {
+        flex-grow: 1;
+        text-align: left;
+        padding-left: 1em;
+        font-weight: bold;
+    }
+    .user-name {
+        padding-right: 2em;
+        max-width: 7em;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
 }
 
 .links > a {
@@ -54,8 +78,11 @@ header {
 }
 
 .spinner-wrapper {
-    position: absolute;
-    right: 1em;
+    // position: absolute;
+    // right: 1em;
+    // display: flex;
+    // flex-direction: row;
+    // align-items: center;
     max-height: 100%;
     .spinner,
     .spinner:after {

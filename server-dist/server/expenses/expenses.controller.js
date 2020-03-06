@@ -7,8 +7,9 @@ let ExpensesController = class ExpensesController {
     constructor(expensesService) {
         this.expensesService = expensesService;
     }
-    getExpenses() {
-        return this.expensesService.getExpenses();
+    getExpenses(filters) {
+        console.log(filters);
+        return this.expensesService.getExpenses(filters);
     }
     insertExpense(expense) {
         return {
@@ -24,8 +25,9 @@ let ExpensesController = class ExpensesController {
 };
 tslib_1.__decorate([
     common_1.Get(),
+    tslib_1.__param(0, common_1.Query()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", []),
+    tslib_1.__metadata("design:paramtypes", [Object]),
     tslib_1.__metadata("design:returntype", Array)
 ], ExpensesController.prototype, "getExpenses", null);
 tslib_1.__decorate([

@@ -51,13 +51,13 @@
 
 <script lang="ts">
 
-import { Vue, Component } from 'vue-property-decorator';
 import { InputExpense, Expense } from '@common/dto/expense';
 import { StorageService } from '@client/services/storageService';
 import { StoreVue } from '@client/utils/base';
 import { actionRegistry } from '../vuex/store';
 
 import moment from 'moment';
+import Vue from 'vue';
 
 interface ExpenseInputModel {
     amount?: number;
@@ -67,75 +67,77 @@ interface ExpenseInputModel {
     date?: string;
 }
 
-export default class ExpenseInsertPage extends StoreVue {
-
-    public get ownerList(): string[] {
-        return this.$store.state.masterData.owners;
+const validateModel = (model: ExpenseInputModel): boolean => {
+    if (!model) {
+        return false;
     }
-    private flags = {
-        showCustomOwner: false,
-    };
-    private model: ExpenseInputModel = {
-        date: moment().format('YYYY-MM-DD'),
-        owner: '',
-    };
-
-    public updateDescription = (value: string) => {
-        this.model.description = value.trim();
+    if (!model.amount) {
+        return false;
     }
 
-    public updateAmount = (value: string) => {
-        this.model.amount = parseFloat(value);
+    if (!model.description) {
+        return false;
     }
-
-    public updateOwner = (value: string) => {
-        this.model.owner = value;
+    if (!model.owner || model.owner === '') {
+        return false;
     }
+    return true;
+};
 
-    public updateTags = (value: string) => {
-    }
+const expenseInsertPageDin = Vue.extend({
+    data() {
+        return {
+            flags: {
+                showCustomOwner: false,
+            },
+            model: {
+                date: moment().format('YYYY-MM-DD'),
+                owner: '',
+            } as ExpenseInputModel,
+        };
+    },
+    computed: {
+        ownerList(): string[] {
+            return this.$store.strongState().masterData.owners;
+        },
+    },
+    methods: {
+        updateDescription(value: string) {
+            this.model.description = value.trim();
+        },
+        updateAmount(value: string) {
+            this.model.amount = parseFloat(value);
+        },
+        updateOwner(value: string) {
+            this.model.owner = value;
+        },
+        updateTags(value: string) { },
+        updateDate(value: string) {
+            this.model.date = value;
+        },
+        forceEdit() {
+            console.log('Force edit!');
+            this.flags.showCustomOwner = true;
+        },
+        submit() {
+            if (validateModel(this.model)) {
+                const serializableModel: InputExpense = {
+                    amount: this.model.amount!,
+                    description: this.model.description!,
+                    owner: this.model.owner!,
+                    tags: [],
+                };
+                this.$store.dispatch(actionRegistry.saveExpense, serializableModel);
+            } else {
+                alert('Invalid entry');
+            }
+        },
 
-    public updateDate = (value: string) => {
-        this.model.date = value;
-    }
+    },
+});
 
-    public forceEdit() {
-        console.log('Force edit!');
-        this.flags.showCustomOwner = true;
-        // this.$set(this.flags, 'showCustomOwner', true);
-    }
+export default expenseInsertPageDin;
 
-    public submit = () => {
-        if (this.validateModel(this.model)) {
-            const serializableModel: InputExpense = {
-                amount: this.model.amount!,
-                description: this.model.description!,
-                owner: this.model.owner!,
-                tags: [],
-            };
-            this.$store.dispatch(actionRegistry.saveExpense, serializableModel);
-        } else {
-            alert('Invalid entry');
-        }
-    }
-
-    private validateModel = (model: ExpenseInputModel): boolean => {
-        if (!model) {
-            return false;
-        }
-        if (!model.amount) {
-            return false;
-        }
-
-        if (!model.description) {
-            return false;
-        }
-        if (!model.owner || model.owner === '') {
-            return false;
-        }
-        return true;
-    }
-}
 </script>
 
 <style lang="scss" scoped>

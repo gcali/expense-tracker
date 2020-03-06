@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Delete, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { Expense, InputExpense } from '@common/dto/expense';
 import { ExpensesService } from './expenses.service';
-import { InsertResult, RemoveResult } from '@common/dto/api';
+import { InsertResult, RemoveResult, ExpenseFilters } from '@common/dto/api';
 
 @Controller('expenses')
 export class ExpensesController {
@@ -9,8 +9,9 @@ export class ExpensesController {
     constructor(private readonly expensesService: ExpensesService) { }
 
     @Get()
-    public getExpenses(): Expense[] {
-        return this.expensesService.getExpenses();
+    public getExpenses(@Query() filters: ExpenseFilters): Expense[] {
+        console.log(filters);
+        return this.expensesService.getExpenses(filters);
     }
 
     @Post()

@@ -31,7 +31,7 @@ import { State, actionRegistry } from '../vuex/store';
 })
 export default class ExpensePage extends StoreVue {
     public get expenseList(): Expense[] {
-        return this.$store.state.expenses.data;
+        return this.$store.strongState().expenses.data;
     }
 
     public mounted() {

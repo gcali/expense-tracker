@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Vuex, { Commit, Store } from 'vuex';
 import { apiActions } from '@client/services/api';
-import { setTimeoutAsync } from '@client/utils/async';
 import { Expense, InputExpense } from '@common/dto/expense';
 
 interface IsLoading {
@@ -18,6 +17,7 @@ export interface State {
     };
     loading: number;
     isLoading: IsLoading;
+    userName: string | null;
 }
 
 const withLoading = async <T>(commit: Commit, callback: () => Promise<T>): Promise<T> => {
@@ -37,6 +37,7 @@ export const mutationRegistry = {
     removeExpense: 'remove-expense',
     setExpenses: 'set-expenses',
     setOwners: 'set-owners',
+    setUserName: 'set-user-name',
 };
 
 export const actionRegistry = {
@@ -44,10 +45,11 @@ export const actionRegistry = {
     reloadExpenses: 'reload-expenses',
     removeExpense: 'remove-expense',
     loadOwners: 'load-owners',
+    logIn: 'log-in',
+    logOut: 'log-out',
 };
 
 Vue.use(Vuex);
-
 
 export const store = new Vuex.Store<State>({
     strict: process.env.NODE_ENV !== 'production',
@@ -63,6 +65,7 @@ export const store = new Vuex.Store<State>({
         isLoading: {
             expenses: false,
         },
+        userName: null,
     },
     mutations: {
         [mutationRegistry.addExpense]: (state, expense: Expense) =>
@@ -78,6 +81,7 @@ export const store = new Vuex.Store<State>({
         [mutationRegistry.setExpenses]: (state, expenses: Expense[]) =>
             state.expenses.data = [...expenses],
         [mutationRegistry.setOwners]: (state, owners: string[]) => state.masterData.owners = [...owners],
+        [mutationRegistry.setUserName]: (state, userName: string | null) => state.userName = userName,
     },
     actions: {
         [actionRegistry.saveExpense]: ({ commit, dispatch }, expense: InputExpense): Promise<void> => {
@@ -86,7 +90,6 @@ export const store = new Vuex.Store<State>({
                     const result = await apiActions.insertExpense(expense);
                     if (result.isOk) {
                         await dispatch(actionRegistry.reloadExpenses);
-                        // commit(mutationRegistry.addExpense, { ...expense, id: result.id });
                     }
                 } catch (e) {
                     console.error(e);
@@ -121,8 +124,25 @@ export const store = new Vuex.Store<State>({
                 commit(mutationRegistry.setOwners, owners);
             });
         },
+        [actionRegistry.logIn]: ({ commit }, userName: string): Promise<void> => {
+            return withLoading(commit, async () => {
+                commit(mutationRegistry.setUserName, userName);
+            });
+        },
+        [actionRegistry.logOut]: async ({ commit }): Promise<void> => {
+            commit(mutationRegistry.setUserName, null);
+        },
     },
 });
+
+declare module 'vuex' {
+    interface Store<S> {
+        strongState: () => State;
+    }
+}
+
+store.strongState = () => store.state;
+
 
 const polling = () => {
     store

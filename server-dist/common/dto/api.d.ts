@@ -4,6 +4,10 @@ export declare type InsertResult = {
     isOk: true;
     id: number;
 };
-export declare type RemoveResult = {
+export interface RemoveResult {
     hasRemoved: boolean;
-};
+}
+export interface ExpenseFilters {
+    owner?: string;
+    mineOnly?: boolean;
+}
